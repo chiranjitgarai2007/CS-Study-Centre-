@@ -1,0 +1,840 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>CG Study Center</title>
+<style>
+  :root {
+  --bg:#070b1a;
+  --glass:rgba(255,255,255,.08);
+  --text:#e8f0ff;
+  --muted:#9fb0d1;
+  --grad:linear-gradient(135deg,#7c5cff 0%, #2dd4bf 60%, #ff5ea4 100%);
+}
+
+/* Reset */
+* {
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',system-ui;
+}
+
+body {
+  background:var(--bg);
+  color:var(--text);
+  overflow-x:hidden;
+}
+
+/* ===== Header/Appbar ===== */
+header.appbar {
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 18px;
+  background:rgba(8,14,32,.8); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--glass);
+}
+.left, .right { display:flex; align-items:center; gap:10px; }
+.brand {
+  font-size:20px; font-weight:800;
+  background:var(--grad); -webkit-background-clip:text; color:transparent;
+}
+.subtitle { font-size:12px; color:var(--muted); }
+.icon-btn {
+  width:38px; height:38px; border-radius:12px; border:0; cursor:pointer;
+  background:var(--glass); color:#fff; font-size:18px;
+  display:grid; place-items:center;
+}
+.icon-btn:hover { background:rgba(255,255,255,.2); }
+
+/* ===== Main Section ===== */
+main { padding:110px 16px 92px; }
+section.view { display:none; }
+section.view.active { display:block; }
+
+/* ===== Grid (Home/Semesters) ===== */
+.grid {
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+}
+@media(min-width:600px){ .grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))} }
+@media(min-width:900px){ .grid{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))} }
+
+/* ===== Card ===== */
+.card {
+  border-radius:16px;
+  overflow:hidden;
+  background:rgba(255,255,255,.05);
+  border:1px solid var(--glass);
+  cursor:pointer;
+  text-decoration:none;
+  color:inherit;
+  transition:.3s;
+}
+.card:hover {
+  transform:translateY(-4px);
+  background:rgba(255,255,255,.1);
+}
+.thumb { height:140px; background:#12214a; }
+.thumb img { width:100%; height:100%; object-fit:cover; }
+.card-body { padding:12px; }
+.title { font-weight:700; font-size:16px; }
+.hint { font-size:13px; color:var(--muted); }
+
+/* ===== Side Menu ===== */
+#menuOverlay {
+  position:fixed; inset:0;
+  background:rgba(0,0,0,.45);
+  opacity:0; visibility:hidden;
+  transition:.25s; z-index:900;
+}
+#menuOverlay.show { opacity:1; visibility:visible; }
+#sideMenu {
+  position:fixed; top:0; left:-250px; height:100%; width:240px; z-index:1001;
+  background:#0d1733; border-right:1px solid var(--glass);
+  padding:80px 12px;
+  display:flex; flex-direction:column; gap:10px;
+  transition:.3s;
+}
+#sideMenu.open { left:0; }
+#sideMenu a {
+  padding:10px 12px; border-radius:10px;
+  color:var(--text); text-decoration:none;
+  background:rgba(255,255,255,.05);
+}
+#sideMenu a:hover { background:rgba(255,255,255,.15); }
+
+/* ===== Subjects & Units Grid ===== */
+.subjects-grid {
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+  margin:16px;
+}
+
+/* ===== Subject / Unit Card ===== */
+.card.subject-card {
+  --accent:#7c5cff;  /* Default accent */
+  position:relative;
+  padding:18px;
+  border-radius:14px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  color:#fff;
+  font-size:16px;
+  font-weight:500;
+  transition:transform .25s, box-shadow .25s;
+  box-shadow:0 4px 12px rgba(0,0,0,0.25);
+  opacity:0; transform:translateY(12px);
+  animation:fadeUp .4s ease forwards;
+}
+.card.subject-card small {
+  font-size:14px; color:#9ca3af; display:block; margin-top:4px;
+}
+.card.subject-card::before {
+  content:"";
+  position:absolute; inset:0 auto 0 0;
+  width:6px;
+  background:linear-gradient(180deg,var(--accent),transparent 80%);
+  border-radius:14px 0 0 14px;
+}
+.card.subject-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 10px 24px rgba(0,0,0,0.4);
+  background:rgba(124,92,255,0.15);
+}
+/* Animation */
+@keyframes fadeUp {
+  from{opacity:0; transform:translateY(14px);}
+  to{opacity:1; transform:translateY(0);}
+}
+.subjects-grid .card.subject-card:nth-child(1){animation-delay:0.05s;}
+.subjects-grid .card.subject-card:nth-child(2){animation-delay:0.12s;}
+.subjects-grid .card.subject-card:nth-child(3){animation-delay:0.18s;}
+.subjects-grid .card.subject-card:nth-child(4){animation-delay:0.25s;}
+.subjects-grid .card.subject-card:nth-child(5){animation-delay:0.32s;}
+
+/* 🎨 Accent Colors */
+.accent-phy  { --accent:#38bdf8; }  /* Physics */
+.accent-chem { --accent:#f87171; }  /* Chemistry */
+.accent-math { --accent:#34d399; }  /* Mathematics */
+.accent-bio  { --accent:#facc15; }  /* Biology */
+
+/* ===== Tabs (Science/Arts/Commerce) ===== */
+.tabs {
+  display:flex;
+  justify-content:center;
+  margin:15px 0;
+  gap:10px;
+}
+.tab {
+  background:#1e1e2f;
+  color:#ccc;
+  padding:8px 16px;
+  border-radius:20px;
+  border:none;
+  cursor:pointer;
+  font-weight:bold;
+  transition:all 0.3s ease;
+}
+.tab.active {
+  background:linear-gradient(135deg,#6a5acd,#00bfff);
+  color:white;
+}
+/* ==== Tabs ==== */
+.tabs {
+  display: flex;
+  justify-content: center;
+  margin: 15px 0;
+  gap: 10px;
+}
+.tab {
+  background: #1e1e2f;
+  color: #ccc;
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+.tab.active {
+  background: linear-gradient(135deg, #6a5acd, #00bfff);
+  color: white;
+}
+
+/* Details Card */
+.detail-card {
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  margin-bottom: 12px;
+}
+.save-btn {
+  margin-top: 8px;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg,#7c5cff,#2dd4bf,#ff5ea4);
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}
+.save-btn.saved { background: #444; }
+/* শুধু Electrostatics detail page এর জন্য */
+#Electrostatics .grid {
+  display: grid;
+  grid-template-columns: 1fr; /* এক লাইনে একটাই কার্ড */
+  gap: 18px;
+}
+
+#Electrostatics .detail-card {
+  border-radius: 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.35);
+}
+
+#Electrostatics .large-card {
+  height: 200px;              /* বড় থাম্বনেইল */
+  background: #1e2a78;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#Electrostatics .thumb-text {
+  font-size: 40px;
+  font-weight: 800;
+  color: #fff;
+}
+
+#Electrostatics .card-body {
+  padding: 14px 18px 20px;
+}
+
+#Electrostatics .card-body .title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+#Electrostatics .card-body .hint {
+  font-size: 14px;
+  color: #bbb;
+}
+
+/* Save button */
+#Electrostatics .save-btn {
+  margin-top: 10px;
+  padding: 6px 14px;
+  border-radius: 14px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg,#7c5cff,#2dd4bf,#ff5ea4);
+  color: #fff;
+  font-weight: 600;
+  transition: all .3s;
+}
+#Electrostatics .save-btn:hover {
+  opacity: 0.85;
+}
+.chat-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg,#6a5acd,#00bfff);
+  color: white;
+  border-radius: 12px;
+  font-size: 20px;
+  transition: 0.3s;
+}
+.chat-btn:hover {
+  opacity: 0.8;
+  transform: translateY(-2px);
+}
+</style>
+</head>
+<body>
+
+<header class="appbar">
+  <div class="left">
+    <button class="icon-btn" id="menuBtn">☰</button>
+    <div>
+      <div class="brand" id="brandTitle">CG Study Center</div>
+      <div class="subtitle" id="brandSub">All-in-one single file</div>
+    </div>
+  </div>
+  <div class="right">
+  
+  <button class="icon-btn" onclick="location.hash='#notifications'">🔔</button>
+  
+  <!-- ✉️ Gmail Button -->
+  <a href="mailto:chiranjit9732140742@gmail.com?subject=Study%20Help&body=হ্যালো,%20আমি%20একটা%20বার্তা%20পাঠাচ্ছি।" class="icon-btn" style="text-decoration:none; display:grid; place-items:center;">
+    ✉️
+  </a>
+
+  <button class="icon-btn" onclick="location.hash='#settings'">⋮</button>
+</div>
+</header>
+
+<div id="searchBar"><input type="text" id="searchInput" placeholder="Search subjects..."></div>
+
+<div id="menuOverlay"></div>
+<aside id="sideMenu">
+  <a href="#intro">🏠 Home</a>
+  <a href="#library">📚 Library</a>
+  <a href="#community">👥 Community</a>
+  <a href="#chat">💬 Chat</a>
+  <a href="#profile">👤 Profile</a>
+  <a href="#settings">⚙️ Settings</a>
+</aside>
+
+<main>
+  <!-- Intro -->
+<section class="view" id="intro">
+  <div class="grid">
+    <a href="#classPage" class="card" style="grid-column:1 / -1">
+      <div class="thumb" style="height:180px;display:flex;align-items:center;justify-content:center;background:#1b2b66">
+        <div style="font-size:40px;font-weight:900;color:#fff">Bongmistry</div>
+      </div>
+      <div class="card-body">
+        <div class="title">Bongmistry</div>
+        <div class="hint">Tap to continue</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+  <!-- Classes -->
+  <section class="view" id="classPage">
+  <div class="grid">
+
+    <!-- Class 9 -->
+    <a href="#class9" class="card" style="grid-column:1 / -1">
+      <div class="thumb" style="height:200px;display:flex;align-items:center;justify-content:center;background:#2a1b66">
+        <div style="font-size:32px;font-weight:700;color:#fff">Class 9</div>
+      </div>
+      <div class="card-body">
+        <div class="title">Class Nine</div>
+        <div class="hint">Tap to continue</div>
+      </div>
+    </a>
+
+    <!-- Class 10 -->
+    <a href="#class10" class="card" style="grid-column:1 / -1">
+      <div class="thumb" style="height:200px;display:flex;align-items:center;justify-content:center;background:#1b662b">
+        <div style="font-size:32px;font-weight:700;color:#fff">Class 10</div>
+      </div>
+      <div class="card-body">
+        <div class="title">Class Ten</div>
+        <div class="hint">Tap to continue</div>
+      </div>
+    </a>
+
+    <!-- Class 11 -->
+    <a href="#class11" class="card" style="grid-column:1 / -1">
+      <div class="thumb" style="height:200px;display:flex;align-items:center;justify-content:center;background:#66441b">
+        <div style="font-size:32px;font-weight:700;color:#fff">Class 11</div>
+      </div>
+      <div class="card-body">
+        <div class="title">Class Eleven</div>
+        <div class="hint">Tap to continue</div>
+      </div>
+    </a>
+
+    <!-- Class 12 -->
+    <a href="#Semesters" class="card" style="grid-column:1 / -1">
+      <div class="thumb" style="height:200px;display:flex;align-items:center;justify-content:center;background:#1b2b66">
+        <div style="font-size:32px;font-weight:700;color:#fff">Class 12</div>
+      </div>
+      <div class="card-body">
+        <div class="title">Class Twelve</div>
+        <div class="hint">Tap to continue</div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+  <!-- Semesters -->
+<section class="view" id="Semesters">
+  <div class="grid">
+    <a href="#sem" class="card" style="grid-column:1 / -1">
+      <div class="thumb" style="height:200px;display:flex;align-items:center;justify-content:center;background:#333366">
+        <div style="font-size:32px;font-weight:700;color:#fff">Sem-3</div>
+      </div>
+      <div class="card-body">
+        <div class="title">Semester 3</div>
+        <div class="hint">Tap to view subjects</div>
+      </div>
+    </a>
+
+    <a href="#sem4" class="card" style="grid-column:1 / -1">
+      <div class="thumb" style="height:200px;display:flex;align-items:center;justify-content:center;background:#1b2b66">
+        <div style="font-size:32px;font-weight:700;color:#fff">Sem-4</div>
+      </div>
+      <div class="card-body">
+        <div class="title">Semester 4</div>
+        <div class="hint">Tap to view subjects</div>
+      </div>
+    </a>
+  </div>
+</section>
+
+  <!-- Sem-4 -->
+<!-- Sem-4 (এক কলামে, অ্যানিমেশন + রঙ) -->
+<!-- ===== Semester 3 Page ===== -->
+<section class="view" id="sem4">
+  <div class="tabs">
+    <button class="tab active" onclick="showSubjects('science', this)">Science</button>
+    <button class="tab" onclick="showSubjects('arts', this)">Arts</button>
+    <button class="tab" onclick="showSubjects('commerce', this)">Commerce</button>
+  </div>
+
+  <!-- Science Subjects -->
+  <div class="subjects-grid" id="science-subjects">
+    <!-- Bengali -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">Bengali <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=Bengali%20Help&body=I%20need%20help%20with%20Bengali" class="chat-btn">💬</a>
+    </div>
+    <!-- English -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">English <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=English%20Help&body=I%20need%20help%20with%20English" class="chat-btn">💬</a>
+    </div>
+    <!-- Physics -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#physics" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">Physics <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=Physics%20Help&body=I%20need%20help%20with%20Physics" class="chat-btn">💬</a>
+    </div>
+    <!-- Chemistry -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">Chemistry <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=Chemistry%20Help&body=I%20need%20help%20with%20Chemistry" class="chat-btn">💬</a>
+    </div>
+    <!-- Mathematics -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#math" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">Mathematics <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=Mathematics%20Help&body=I%20need%20help%20with%20Mathematics" class="chat-btn">💬</a>
+    </div>
+    <!-- Biology -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">Biology <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=Biology%20Help&body=I%20need%20help%20with%20Biology" class="chat-btn">💬</a>
+    </div>
+  </div>
+
+  <!-- Arts Subjects -->
+  <div class="subjects-grid" id="arts-subjects" style="display:none;">
+    <!-- Bengali -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">Bengali <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=Bengali%20Help&body=I%20need%20help%20with%20Bengali" class="chat-btn">💬</a>
+    </div>
+    <!-- English -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">English <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=English%20Help&body=I%20need%20help%20with%20English" class="chat-btn">💬</a>
+    </div>
+    <!-- History -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">History <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=History%20Help&body=I%20need%20help%20with%20History" class="chat-btn">💬</a>
+    </div>
+    <!-- Geography -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">Geography <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=Geography%20Help&body=I%20need%20help%20with%20Geography" class="chat-btn">💬</a>
+    </div>
+    <!-- Political Science -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">Political Science <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=Political%20Science%20Help&body=I%20need%20help%20with%20Political%20Science" class="chat-btn">💬</a>
+    </div>
+    <!-- Economics -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">Economics <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=Economics%20Help&body=I%20need%20help%20with%20Economics" class="chat-btn">💬</a>
+    </div>
+  </div>
+
+  <!-- Commerce Subjects -->
+  <div class="subjects-grid" id="commerce-subjects" style="display:none;">
+    <!-- Bengali -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">Bengali <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=Bengali%20Help&body=I%20need%20help%20with%20Bengali" class="chat-btn">💬</a>
+    </div>
+    <!-- English -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">English <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=English%20Help&body=I%20need%20help%20with%20English" class="chat-btn">💬</a>
+    </div>
+    <!-- Accountancy -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">Accountancy <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=Accountancy%20Help&body=I%20need%20help%20with%20Accountancy" class="chat-btn">💬</a>
+    </div>
+    <!-- Business Studies -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">Business Studies <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=Business%20Studies%20Help&body=I%20need%20help%20with%20Business%20Studies" class="chat-btn">💬</a>
+    </div>
+    <!-- Economics -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">Economics <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=Economics%20Help&body=I%20need%20help%20with%20Economics" class="chat-btn">💬</a>
+    </div>
+    <!-- Mathematics -->
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="#" style="flex:1; text-decoration:none; color:inherit;">
+        <div class="card subject-card">Mathematics <br><small>Unlock to view chapters</small></div>
+      </a>
+      <a href="mailto:cgarai581@gmail.com?subject=Mathematics%20Help&body=I%20need%20help%20with%20Mathematics" class="chat-btn">💬</a>
+    </div>
+  </div>
+</section>
+<!-- ===== Physics Page ===== -->
+<!-- ===== Physics Page ===== -->
+<!-- ===== Physics Page ===== -->
+<section class="view" id="physics">
+  <div class="subjects-grid">
+    <!-- Unit 1 -->
+    <a href="#Electrostatics" class="unit-link" style="text-decoration:none; color:inherit;">
+      <div class="card subject-card">Electrostatics <br><small>Unit 1</small></div>
+    </a>
+
+    <!-- Unit 2 -->
+    <a href="#CurrentElectricity" class="unit-link" style="text-decoration:none; color:inherit;">
+      <div class="card subject-card">Current Electricity <br><small>Unit 2</small></div>
+    </a>
+
+    <!-- Unit 3 -->
+    <a href="#Magnetism" class="unit-link" style="text-decoration:none; color:inherit;">
+      <div class="card subject-card">Magnetic Effects of Current and Magnetism <br><small>Unit 3</small></div>
+    </a>
+      <!-- Unit 4 -->
+     <a href="#Magnetism" class="unit-link" style="text-decoration:none; color:inherit;">
+      <div class="card subject-card">Electromagnetic Induction And Alternating Current <br><small>Unit 4</small></div>
+    </a>
+         <!-- Unit 5 -->
+     <a href="#Magnetism" class="unit-link" style="text-decoration:none; color:inherit;">
+      <div class="card subject-card">Electromagnetic Waves  <br><small>Unit 5</small></div>
+    </a>
+  </div>
+</section>
+
+
+<!-- ===== Unit 1: Electrostatics ===== -->
+<section class="view" id="Electrostatics">
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" onclick="filterDetail('all',this)">All</button>
+    <button class="tab" onclick="filterDetail('video',this)">Videos</button>
+    <button class="tab" onclick="filterDetail('note',this)">Notes</button>
+    <button class="tab" onclick="filterDetail('test',this)">Test</button>
+    <button class="tab" onclick="filterDetail('saved',this)">Saved</button>
+  </div>
+
+  <!-- Items -->
+  <div class="grid" id="detailList">
+
+    <!-- Video 1 -->
+    <a href="https://www.youtube.com/watch?v=xxxxxx" target="_blank" class="card detail-card" data-type="video" id="vid1">
+      <div class="thumb large-card">
+        <div class="thumb-text">Video 1</div>
+      </div>
+      <div class="card-body">
+        <div class="title">Electrostatics Lecture 1</div>
+        <div class="hint">Physics Video</div>
+        <button type="button" class="save-btn" onclick="event.preventDefault();toggleSave('vid1')">Save</button>
+      </div>
+    </a>
+
+    <!-- Video 2 -->
+    <a href="https://www.youtube.com/watch?v=yyyyyy" target="_blank" class="card detail-card" data-type="video" id="vid2">
+      <div class="thumb large-card" style="background:#0d4b2a;">
+        <div class="thumb-text">Video 2</div>
+      </div>
+      <div class="card-body">
+        <div class="title">Electrostatics Lecture 2</div>
+        <div class="hint">Physics Video</div>
+        <button type="button" class="save-btn" onclick="event.preventDefault();toggleSave('vid2')">Save</button>
+      </div>
+    </a>
+
+  </div>
+</section>
+  <!-- ===== Mathematics Chapters (from mathematics chapter.html) ===== -->
+  <section class="view" id="math">
+    <div class="subjects-grid">
+      <a class="card" href="#math-ch1"><div class="card-body"><div class="title">সম্বন্ধ</div><div class="hint">Chapter 1</div></div></a>
+      <a class="card" href="#math-ch2"><div class="card-body"><div class="title">অপেক্ষক</div><div class="hint">Chapter 2</div></div></a>
+      <a class="card" href="#math-ch3"><div class="card-body"><div class="title">বিপরীতত্রিকোণমিতিক অপেক্ষকসমূহ</div><div class="hint">Chapter 3</div></div></a>
+      <a class="card" href="#math-ch4"><div class="card-body"><div class="title">ম্যাট্রিক্স প্রকারভেদ ও ম্যাট্রিক্স বীজগণিত</div><div class="hint">Chapter 4</div></div></a>
+      <a class="card" href="#math-ch5"><div class="card-body"><div class="title">নির্ণায়ক</div><div class="hint">Chapter 5</div></div></a>
+      <a class="card" href="#math-ch6"><div class="card-body"><div class="title">অ্যাডজয়েন্ট ও বিপরীত ম্যাট্রিক্স</div><div class="hint">Chapter 6</div></div></a>
+      <a class="card" href="#math-ch7"><div class="card-body"><div class="title">সততা এবং অন্তরকরণযোগ্যতা</div><div class="hint">Chapter 7</div></div></a>
+      <a class="card" href="#math-ch8"><div class="card-body"><div class="title">অবকলন বা অন্তরকরণ</div><div class="hint">Chapter 8</div></div></a>
+      <a class="card" href="#math-ch9"><div class="card-body"><div class="title">দ্বিতীয় ক্রমের অন্তরকল্পজ</div><div class="hint">Chapter 9</div></div></a>
+      <a class="card" href="#math-ch10"><div class="card-body"><div class="title">অন্তরকলজ ব্যাখ্যা</div><div class="hint">Chapter 10</div></div></a>
+      <a class="card" href="#math-ch11"><div class="card-body"><div class="title">স্পর্শক ও অভিলম্ব</div><div class="hint">Chapter 11</div></div></a>
+      <a class="card" href="#math-ch12"><div class="card-body"><div class="title">বধিষ্ণু ও ক্ষয়িষ্ণু অপেক্ষক</div><div class="hint">Chapter 12</div></div></a>
+      <a class="card" href="#math-ch13"><div class="card-body"><div class="title">চরন ও অবম  মান</div><div class="hint">Chapter 13</div></div></a>
+      <a class="card" href="#math-ch14"><div class="card-body"><div class="title">সম্ভাবনা</div><div class="hint">Chapter 14</div></div></a>
+      <a class="card" href="#math-ch15"><div class="card-body"><div class="title">সম-সদৃশ চরন ও তার বিভাজন</div><div class="hint">Chapter 15</div></div></a>
+    </div>
+  </section>
+
+<!-- Sem-4 (এক কলামে, অ্যানিমেশন + রঙ) -->
+<section class="view" id="sem4">
+  <div class="tabs">
+    <button class="tab active" onclick="showSubjects('science', this)">Science</button>
+    <button class="tab" onclick="showSubjects('arts', this)">Arts</button>
+    <button class="tab" onclick="showSubjects('commerce', this)">Commerce</button>
+  </div>
+  
+  <div class="grid subjects-grid">
+
+    <a class="card subject-card accent-eng" href="#english">
+      <div class="card-body">
+        <div class="title">English</div>
+        <div class="hint">Unlock to view chapters</div>
+      </div>
+    </a>
+
+    <a class="card subject-card accent-hist" href="#history">
+      <div class="card-body">
+        <div class="title">History</div>
+        <div class="hint">Unlock to view chapters</div>
+      </div>
+    </a>
+
+    <a class="card subject-card accent-geo" href="#geography">
+      <div class="card-body">
+        <div class="title">Geography</div>
+        <div class="hint">Unlock to view chapters</div>
+      </div>
+    </a>
+
+    <a class="card subject-card accent-cs" href="#cs">
+      <div class="card-body">
+        <div class="title">Computer Science</div>
+        <div class="hint">Unlock to view chapters</div>
+      </div>
+    </a>
+
+  </div>
+</section>
+
+  <!-- Notifications -->
+  <section class="view" id="notifications">
+    <div class="grid">
+      <div class="card"><div class="card-body"><div class="title">🎯 Motivation</div><div class="hint">Believe in yourself!</div></div></div>
+      <div class="card"><div class="card-body"><div class="title">Reminder</div><div class="hint">Finish Physics Ch-2 today</div></div></div>
+    </div>
+  </section>
+
+  <!-- Settings -->
+  <section class="view" id="settings">
+    <div class="grid">
+      <div class="card"><div class="card-body"><div class="title">⚙️ Settings</div><div class="hint">Theme, Language</div></div></div>
+      <div class="card"><div class="card-body"><div class="title">ℹ️ About</div><div class="hint">Version 1.0</div></div></div>
+    </div>
+  </section>
+
+  <!-- Search Results -->
+  <section class="view" id="searchResults"><div class="grid" id="resultsGrid"></div><div class="no-results" id="noResults" style="display:none">No results found</div></section>
+</main>
+
+<script>
+const routes = {
+ intro: {title: "Welcome", sub: "Bongmistry"},
+ classPage: {title: "Classes", sub: "Choose one"},
+ Semesters: {title: "Class Twelve", sub: "Semesters"},
+ sem3: {title: "Semester 3", sub: "Subjects"},
+ sem4: {title: "Semester 4", sub: "Subjects"},
+ physics: {title: "Physics Unit", sub: "Units"},   // ✅ Physics যুক্ত
+ notifications: {title: "Notifications", sub: "Alerts"},
+ settings: {title: "Settings", sub: "Preferences"},
+ searchResults: {title: "Search", sub: "Results"}
+};
+
+function showRoute(hash){
+ const id = (hash || "#intro").replace("#","");
+ 
+ // হেডারের টাইটেল/সাবটাইটেল সেট
+ document.getElementById("brandTitle").textContent = routes[id]?.title || "CG Study Center";
+ document.getElementById("brandSub").textContent = routes[id]?.sub || "All-in-one single file";
+
+ // সব section hide
+ document.querySelectorAll("section.view").forEach(v => v.classList.remove("active"));
+
+ // target section বের করি
+ const el = document.getElementById(id) || document.getElementById("intro");
+ el.classList.add("active");
+
+ // ✅ যদি Physics এ ঢুকে থাকি → ইউনিট grid show করবো
+ if(id === "physics"){
+   const physicsGrid = document.querySelector("#physics .subjects-grid");
+   if(physicsGrid) physicsGrid.style.display = "grid";  // force show
+ }
+
+ // নতুন পেজ খুললেই সার্চ বার লুকানো
+ const sb = document.getElementById("searchBar");
+ if(sb) sb.style.display = "none";
+}
+
+window.addEventListener("hashchange", ()=>showRoute(location.hash));
+window.addEventListener("DOMContentLoaded", ()=>showRoute(location.hash || "#intro"));
+
+/* ==== side menu control ==== */
+const menuBtn = document.getElementById("menuBtn");
+const sideMenu = document.getElementById("sideMenu");
+const overlay = document.getElementById("menuOverlay");
+
+menuBtn.onclick = ()=>{
+  sideMenu.classList.add("open");
+  overlay.classList.add("show");
+};
+overlay.onclick = ()=>{
+  sideMenu.classList.remove("open");
+  overlay.classList.remove("show");
+  location.hash="#intro";
+};
+sideMenu.querySelectorAll("a").forEach(a=>{
+  a.onclick = ()=>{
+    sideMenu.classList.remove("open");
+    overlay.classList.remove("show");
+  };
+});
+
+/* ==== Show Subjects Tabs ==== */
+function showSubjects(category, btn) {
+  // সব subject div hide করে দিচ্ছি
+  document.getElementById("science-subjects").style.display = "none";
+  document.getElementById("arts-subjects").style.display = "none";
+  document.getElementById("commerce-subjects").style.display = "none";
+
+  // নির্বাচিত category show করবো
+  document.getElementById(category + "-subjects").style.display = "grid";
+
+  // Active Tab highlight
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  btn.classList.add("active");
+}
+/* ==== Electrostatics Filter + Save ==== */
+let savedItems = new Set();
+
+function filterDetail(type, btn) {
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  btn.classList.add("active");
+
+  document.querySelectorAll("#detailList .detail-card").forEach(card => {
+    if(type==="all") {
+      card.style.display="block";
+    } else if(type==="saved") {
+      card.style.display = savedItems.has(card.id) ? "block" : "none";
+    } else {
+      card.style.display = (card.dataset.type===type) ? "block" : "none";
+    }
+  });
+}
+
+function toggleSave(id) {
+  const btn=document.querySelector(`#${id} .save-btn`);
+  if(savedItems.has(id)) {
+    savedItems.delete(id);
+    btn.classList.remove("saved");
+    btn.textContent="Save";
+  } else {
+    savedItems.add(id);
+    btn.classList.add("saved");
+    btn.textContent="Saved";
+  }
+}
+</script>
+</body>
+</html>
